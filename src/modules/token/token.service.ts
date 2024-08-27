@@ -1,37 +1,35 @@
 // Nest
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 
 // Jwt
 import { JwtService } from '@nestjs/jwt';
 
 // Model
-import { User } from '../../database/models/user.model';
+import { Token } from '../../database/models/token.model';
 
 // Repository
-import { UserRepository } from '../../database/repositories/user.repository';
 import { TokenRepository } from '../../database/repositories/token.repository';
 
 // Dto
 import { AuthTokensDto } from '../auth/dto/auth-tokens.dto';
 import { GenerateTokenDto } from './dto/generate-token.dto';
+import { DecodedAccessTokenDto } from './dto/decoded-access-token.dto';
+import { ValidateRefreshTokenDto } from './dto/validate-refresh-token.dto';
 
 @Injectable()
 export class TokenService {
   constructor(
     private readonly jwtService: JwtService,
-    private readonly userRepository: UserRepository,
     private readonly tokenRepository: TokenRepository,
   ) {}
 
   private readonly accessTokenLifetime = '15m';
   private readonly refreshTokenLifetime = '7d';
 
-  async generateAuthTokens(user: User): Promise<AuthTokensDto> {
-    const userId = user['_id'];
-
+  async generateAuthTokens(userId: string, email: string): Promise<Token> {
     const tokenDto: GenerateTokenDto = {
       sub: userId,
-      username: user.email,
+      username: email,
     };
 
     const accessToken = this.generateAccessToken(tokenDto);
@@ -44,10 +42,25 @@ export class TokenService {
       expire_at: refreshTokenExpireAt,
     };
 
-    const newToken = await this.tokenRepository.create(tokens, user);
-    await this.userRepository.addAuthToken(userId, newToken['_id']);
+    return await this.tokenRepository.create(tokens, userId);
+  }
 
-    return tokens;
+  async validateRefreshToken(payload: ValidateRefreshTokenDto): Promise<Token> {
+    return await this.tokenRepository.validateRefreshToken(payload);
+  }
+
+  async deleteToken(id: string): Promise<void> {
+    await this.tokenRepository.delete(id);
+  }
+
+  decodeAccessToken(accessToken: string): DecodedAccessTokenDto {
+    try {
+      const preparedAccessToken = accessToken.replace('Bearer ', '');
+
+      return this.jwtService.decode(preparedAccessToken);
+    } catch (error) {
+      throw new BadRequestException('Invalid access token!');
+    }
   }
 
   private generateAccessToken(payload: GenerateTokenDto) {

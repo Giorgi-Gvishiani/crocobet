@@ -1,5 +1,5 @@
 // Nest
-import { Body, Controller, HttpCode, Post } from '@nestjs/common';
+import { Body, Post, Request, HttpCode, Controller } from '@nestjs/common';
 
 // Service
 import { AuthService } from './auth.service';
@@ -7,6 +7,8 @@ import { AuthService } from './auth.service';
 // Dto
 import { SignUpDto } from './dto/sign-up.dto';
 import { SignInDto } from './dto/sign-in.dto';
+import { AuthTokensDto } from './dto/auth-tokens.dto';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -20,7 +22,18 @@ export class AuthController {
 
   @Post('sign-in')
   @HttpCode(200)
-  async signIn(@Body() body: SignInDto): Promise<any> {
+  async signIn(@Body() body: SignInDto): Promise<AuthTokensDto> {
     return this.authService.signIn(body);
+  }
+
+  @Post('refresh-token')
+  @HttpCode(200)
+  async refreshToken(
+    @Request() request,
+    @Body() body: RefreshTokenDto,
+  ): Promise<AuthTokensDto> {
+    const accessToken = request.headers['authorization'].replace('Bearer ', '');
+
+    return this.authService.refreshToken(accessToken, body.refresh_token);
   }
 }

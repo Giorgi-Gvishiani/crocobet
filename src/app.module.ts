@@ -8,6 +8,9 @@ import { ConfigModule } from '@nestjs/config';
 import { MongoDbConfig } from './database/mongodb.config';
 import { MongooseModule } from '@nestjs/mongoose';
 
+// Strategy
+import { JwtStrategy } from './strategies/jwt.strategy';
+
 // Controller
 import { AppController } from './app.controller';
 
@@ -30,6 +33,6 @@ import { AuthModule } from './modules/auth/auth.module';
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, JwtStrategy],
 })
 export class AppModule {}
