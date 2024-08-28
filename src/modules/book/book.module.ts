@@ -15,10 +15,11 @@ import { BookController } from './book.controller';
 
 // Service
 import { BookService } from './book.service';
+import { CacheService } from '../../cache/cache.service';
 
 @Module({
   imports: [MongooseModule.forFeature([{ name: 'Book', schema: BookSchema }])],
   controllers: [BookController],
-  providers: [BookService, BookRepository],
+  providers: [BookService, CacheService, BookRepository],
 })
 export class BookModule {}

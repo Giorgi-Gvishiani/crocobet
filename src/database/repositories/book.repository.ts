@@ -72,14 +72,14 @@ export class BookRepository implements IBookRepository {
     return await this.bookModel.findOne({ isbn }).exec();
   }
 
-  async addPage(bookId: string, pageId: string): Promise<void> {
-    await this.bookModel.findByIdAndUpdate(bookId, {
+  async addPage(bookId: string, pageId: string): Promise<Book> {
+    return await this.bookModel.findByIdAndUpdate(bookId, {
       $push: { pages: pageId },
     });
   }
 
-  async removePage(bookId: string, pageId: string): Promise<void> {
-    await this.bookModel.findByIdAndUpdate(bookId, {
+  async removePage(bookId: string, pageId: string): Promise<Book> {
+    return await this.bookModel.findByIdAndUpdate(bookId, {
       $pull: { pages: new Types.ObjectId(pageId) },
     });
   }

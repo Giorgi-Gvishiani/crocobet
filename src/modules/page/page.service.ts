@@ -13,18 +13,28 @@ import { PageDto } from './dto/page.dto';
 import { PageListDto } from './dto/page-list.dto';
 import { UpdatePageDto } from './dto/update-page.dto';
 
+// Service
+import { CacheService } from '../../cache/cache.service';
+
 @Injectable()
 export class PageService {
   private pageLimit = 20;
 
   constructor(
+    private readonly cacheService: CacheService,
     private readonly pageRepository: PageRepository,
     private readonly bookRepository: BookRepository,
   ) {}
 
   async create(payload: PageDto): Promise<void> {
     const page = await this.pageRepository.create(payload);
-    await this.bookRepository.addPage(payload.book_id, page['_id']);
+    const book = await this.bookRepository.addPage(
+      payload.book_id,
+      page['_id'],
+    );
+
+    const cacheKey = `books:detail:${book['_id']}`;
+    await this.cacheService.set(cacheKey, book);
   }
 
   async update(id: string, payload: UpdatePageDto): Promise<void> {
@@ -39,7 +49,10 @@ export class PageService {
     const page = await this.pageRepository.findOne(id);
 
     await this.pageRepository.delete(id);
-    await this.bookRepository.removePage(page.book.toString(), id);
+    const book = await this.bookRepository.removePage(page.book.toString(), id);
+
+    const cacheKey = `books:detail:${book['_id']}`;
+    await this.cacheService.set(cacheKey, book);
   }
 
   async getOne(id: string): Promise<PageDto> {

@@ -11,17 +11,27 @@ import { BookRepository } from '../../database/repositories/book.repository';
 import { BookDto } from './dto/book.dto';
 import { BookListDto } from './dto/book-list.dto';
 
+// Service
+import { CacheService } from '../../cache/cache.service';
+
 @Injectable()
 export class BookService {
   private readonly pageLimit = 20;
-  constructor(private readonly bookRepository: BookRepository) {}
+
+  constructor(
+    private cacheService: CacheService,
+    private readonly bookRepository: BookRepository,
+  ) {}
 
   async create(payload: BookDto): Promise<void> {
     await this.bookRepository.create(payload);
   }
 
   async update(id: string, payload: BookDto): Promise<void> {
+    const cacheKey = `books:detail:${id}`;
+
     const result = await this.bookRepository.update(id, payload);
+    await this.cacheService.set(cacheKey, result);
 
     if (!result) throw new BadRequestException('Book does not exist!');
   }
@@ -31,24 +41,40 @@ export class BookService {
   }
 
   async findOne(id: string): Promise<BookDto> {
+    const cacheKey = `books:detail:${id}`;
+
+    const cachedBook = await this.cacheService.get<Book>(cacheKey);
+
     const response = await this.bookRepository.findOne(id);
 
     if (!response) {
       throw new BadRequestException('Book not found!');
     }
 
-    return this.bookMapper(response);
+    await this.cacheService.set(cacheKey, response);
+
+    return this.bookMapper(cachedBook ?? response);
   }
 
   async getBookList(cursor: string): Promise<BookListDto> {
+    // არ ვიცი რამდენად იყო საჭირო რომ List-ის წამოღების დროს გამეკეთებინა პაგინაცია. მე კი გავაკეთე ეგ და მაგ list-ის დაქეშვაც გავაკეთე
+    // უბრალოდ ინახავს თითო პაგინაციის პეიჯს, ის რომ გავაკეთო pagination + caching ცოტა კომპლეკსური საკითხია და ამ ეტაპზე გავანებე თავი
+
+    const cacheKey = `books:list:${cursor}`;
+    const cachedBook = await this.cacheService.get<Array<Book>>(cacheKey);
+
     let isLastPage = false;
-    const response = await this.bookRepository.findMany(cursor, this.pageLimit);
+    const response =
+      cachedBook ??
+      (await this.bookRepository.findMany(cursor, this.pageLimit));
 
     if (response.length <= this.pageLimit) {
       isLastPage = true;
     } else {
       response.pop();
     }
+
+    await this.cacheService.set(cacheKey, response);
 
     const books = response.map(this.bookMapper);
 
