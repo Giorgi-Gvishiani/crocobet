@@ -21,8 +21,8 @@ import { BookService } from './book.service';
 
 // Dto
 import { BookDto } from './dto/book.dto';
-import { BooksPageDto } from './dto/books-page.dto';
-import { GetBooksPageDto } from './dto/get-books-page.dto';
+import { BookListDto } from './dto/book-list.dto';
+import { GetBookListDto } from './dto/get-book-list.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('book')
@@ -55,7 +55,7 @@ export class BookController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  async getBooksPage(@Query() query: GetBooksPageDto): Promise<BooksPageDto> {
-    return await this.bookService.getBooksPage(query.cursor);
+  async getBookList(@Query() query: GetBookListDto): Promise<BookListDto> {
+    return await this.bookService.getBookList(query.cursor);
   }
 }

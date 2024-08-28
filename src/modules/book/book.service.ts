@@ -9,7 +9,7 @@ import { BookRepository } from '../../database/repositories/book.repository';
 
 // Dto
 import { BookDto } from './dto/book.dto';
-import { BooksPageDto } from './dto/books-page.dto';
+import { BookListDto } from './dto/book-list.dto';
 
 @Injectable()
 export class BookService {
@@ -40,7 +40,7 @@ export class BookService {
     return this.bookMapper(response);
   }
 
-  async getBooksPage(cursor: string): Promise<BooksPageDto> {
+  async getBookList(cursor: string): Promise<BookListDto> {
     let isLastPage = false;
     const response = await this.bookRepository.findMany(cursor, this.pageLimit);
 

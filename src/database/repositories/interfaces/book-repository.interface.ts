@@ -14,4 +14,8 @@ export interface IBookRepository {
   findOne(id: string): Promise<Book>;
 
   findMany(cursor: string, limit: number): Promise<Array<Book>>;
+
+  addPage(bookId: string, pageId: string): Promise<void>;
+
+  removePage(bookId: string, pageId: string): Promise<void>;
 }

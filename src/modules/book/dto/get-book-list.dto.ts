@@ -1,6 +1,6 @@
 import { IsOptional } from 'class-validator';
 
-export class GetBooksPageDto {
+export class GetBookListDto {
   @IsOptional()
   cursor: string;
 }

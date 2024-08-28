@@ -20,6 +20,7 @@ import { AppService } from './app.service';
 // Module
 import { AuthModule } from './modules/auth/auth.module';
 import { BookModule } from './modules/book/book.module';
+import { PageModule } from './modules/page/page.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { BookModule } from './modules/book/book.module';
     }),
     AuthModule,
     BookModule,
+    PageModule,
   ],
   controllers: [AppController],
   providers: [AppService, JwtStrategy],

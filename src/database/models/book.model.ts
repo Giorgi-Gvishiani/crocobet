@@ -1,5 +1,5 @@
 // Mongo
-import { HydratedDocument } from 'mongoose';
+import { HydratedDocument, Types } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 export type BookDocument = HydratedDocument<Book>;
@@ -25,6 +25,12 @@ export class Book {
 
   @Prop({ type: Date, required: true })
   published_date: Date;
+
+  @Prop({
+    type: [Types.ObjectId],
+    ref: 'Page',
+  })
+  pages: Array<Types.ObjectId>;
 }
 
 export const BookSchema = SchemaFactory.createForClass(Book);

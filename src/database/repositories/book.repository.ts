@@ -2,8 +2,7 @@
 import { BadRequestException } from '@nestjs/common';
 
 // Mongo
-import * as mongoose from 'mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 
 // Model
@@ -32,6 +31,7 @@ export class BookRepository implements IBookRepository {
       author: payload.author,
       isbn: payload.isbn,
       published_date: payload.publication_date,
+      pages: [],
     };
 
     const record = new this.bookModel(newBook);
@@ -40,14 +40,12 @@ export class BookRepository implements IBookRepository {
   }
 
   async update(id: string, payload: BookDto): Promise<Book | null> {
-    const updatedBook: Book = {
+    return await this.bookModel.findByIdAndUpdate(id, {
       title: payload.title,
       author: payload.author,
       isbn: payload.isbn,
       published_date: payload.publication_date,
-    };
-
-    return await this.bookModel.findByIdAndUpdate(id, updatedBook);
+    });
   }
 
   async delete(id: string): Promise<void> {
@@ -61,7 +59,7 @@ export class BookRepository implements IBookRepository {
   async findMany(cursor: string, limit: number): Promise<Array<Book>> {
     const query = {};
 
-    if (cursor) query['_id'] = { $gt: new mongoose.Types.ObjectId(cursor) };
+    if (cursor) query['_id'] = { $gt: new Types.ObjectId(cursor) };
 
     return this.bookModel
       .find(query)
@@ -72,5 +70,17 @@ export class BookRepository implements IBookRepository {
 
   private async findOneByIsbn(isbn: string): Promise<Book> {
     return await this.bookModel.findOne({ isbn }).exec();
+  }
+
+  async addPage(bookId: string, pageId: string): Promise<void> {
+    await this.bookModel.findByIdAndUpdate(bookId, {
+      $push: { pages: pageId },
+    });
+  }
+
+  async removePage(bookId: string, pageId: string): Promise<void> {
+    await this.bookModel.findByIdAndUpdate(bookId, {
+      $pull: { pages: new Types.ObjectId(pageId) },
+    });
   }
 }

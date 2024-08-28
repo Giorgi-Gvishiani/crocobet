@@ -1,6 +1,6 @@
 import { BookDto } from './book.dto';
 
-export class BooksPageDto {
+export class BookListDto {
   books: Array<BookDto>;
 
   cursor: string;
