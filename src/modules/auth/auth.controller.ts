@@ -1,5 +1,12 @@
 // Nest
-import { Body, Post, Request, HttpCode, Controller } from '@nestjs/common';
+import {
+  Body,
+  Post,
+  Request,
+  HttpCode,
+  HttpStatus,
+  Controller,
+} from '@nestjs/common';
 
 // Service
 import { AuthService } from './auth.service';
@@ -15,19 +22,19 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('sign-up')
-  @HttpCode(201)
+  @HttpCode(HttpStatus.CREATED)
   async signUp(@Body() body: SignUpDto): Promise<void> {
     await this.authService.signUp(body);
   }
 
   @Post('sign-in')
-  @HttpCode(200)
+  @HttpCode(HttpStatus.OK)
   async signIn(@Body() body: SignInDto): Promise<AuthTokensDto> {
     return this.authService.signIn(body);
   }
 
   @Post('refresh-token')
-  @HttpCode(200)
+  @HttpCode(HttpStatus.OK)
   async refreshToken(
     @Request() request,
     @Body() body: RefreshTokenDto,

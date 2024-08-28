@@ -1,0 +1,61 @@
+// Nest
+import {
+  Get,
+  Put,
+  Post,
+  Body,
+  Query,
+  Param,
+  Delete,
+  HttpCode,
+  UseGuards,
+  Controller,
+  HttpStatus,
+} from '@nestjs/common';
+
+// Guard
+import { JwtAuthGuard } from '../../guards/jwt.guard';
+
+// Service
+import { BookService } from './book.service';
+
+// Dto
+import { BookDto } from './dto/book.dto';
+import { BooksPageDto } from './dto/books-page.dto';
+import { GetBooksPageDto } from './dto/get-books-page.dto';
+
+@UseGuards(JwtAuthGuard)
+@Controller('book')
+export class BookController {
+  constructor(private readonly bookService: BookService) {}
+
+  @Post()
+  @HttpCode(HttpStatus.CREATED)
+  async create(@Body() body: BookDto): Promise<void> {
+    await this.bookService.create(body);
+  }
+
+  @Put()
+  @HttpCode(HttpStatus.OK)
+  async update(@Body() body: BookDto): Promise<void> {
+    await this.bookService.update(body);
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.OK)
+  async delete(@Param('id') id: string): Promise<void> {
+    await this.bookService.delete(id);
+  }
+
+  @Get(':id')
+  @HttpCode(HttpStatus.OK)
+  async getOne(@Param('id') id: string): Promise<BookDto> {
+    return await this.bookService.findOne(id);
+  }
+
+  @Get()
+  @HttpCode(HttpStatus.OK)
+  async getBooksPage(@Query() query: GetBooksPageDto): Promise<BooksPageDto> {
+    return await this.bookService.getBooksPage(query.cursor);
+  }
+}
