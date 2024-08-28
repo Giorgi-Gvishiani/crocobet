@@ -2,8 +2,8 @@
 import { BadRequestException } from '@nestjs/common';
 
 // Mongo
-import { Model } from 'mongoose';
 import * as mongoose from 'mongoose';
+import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 
 // Model
@@ -39,7 +39,7 @@ export class BookRepository implements IBookRepository {
     await record.save();
   }
 
-  async update(payload: BookDto): Promise<void> {
+  async update(id: string, payload: BookDto): Promise<Book | null> {
     const updatedBook: Book = {
       title: payload.title,
       author: payload.author,
@@ -47,7 +47,7 @@ export class BookRepository implements IBookRepository {
       published_date: payload.publication_date,
     };
 
-    await this.bookModel.findByIdAndUpdate(payload['_id'], updatedBook);
+    return await this.bookModel.findByIdAndUpdate(id, updatedBook);
   }
 
   async delete(id: string): Promise<void> {
@@ -61,8 +61,7 @@ export class BookRepository implements IBookRepository {
   async findMany(cursor: string, limit: number): Promise<Array<Book>> {
     const query = {};
 
-    if (query)
-      query['_id'] = { $gt: new mongoose.Schema.Types.ObjectId(cursor) };
+    if (cursor) query['_id'] = { $gt: new mongoose.Types.ObjectId(cursor) };
 
     return this.bookModel
       .find(query)

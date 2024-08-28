@@ -1,4 +1,4 @@
-import { IsDate, IsNotEmpty, IsString, Matches } from 'class-validator';
+import { IsDateString, IsNotEmpty, IsString, Matches } from 'class-validator';
 
 export class BookDto {
   id?: string;
@@ -17,6 +17,6 @@ export class BookDto {
   isbn: string;
 
   @IsNotEmpty()
-  @IsDate()
+  @IsDateString()
   publication_date: Date;
 }

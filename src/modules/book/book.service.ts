@@ -20,8 +20,10 @@ export class BookService {
     await this.bookRepository.create(payload);
   }
 
-  async update(payload: BookDto): Promise<void> {
-    await this.bookRepository.update(payload);
+  async update(id: string, payload: BookDto): Promise<void> {
+    const result = await this.bookRepository.update(id, payload);
+
+    if (!result) throw new BadRequestException('Book does not exist!');
   }
 
   async delete(id: string): Promise<void> {
@@ -52,7 +54,7 @@ export class BookService {
 
     return {
       books,
-      cursor: books[books.length - 1]['_id'],
+      cursor: books[books.length - 1].id,
       is_last_page: isLastPage,
     };
   }

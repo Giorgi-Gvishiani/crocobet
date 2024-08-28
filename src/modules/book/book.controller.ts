@@ -35,10 +35,10 @@ export class BookController {
     await this.bookService.create(body);
   }
 
-  @Put()
+  @Put(':id')
   @HttpCode(HttpStatus.OK)
-  async update(@Body() body: BookDto): Promise<void> {
-    await this.bookService.update(body);
+  async update(@Body() body: BookDto, @Param('id') id: string): Promise<void> {
+    await this.bookService.update(id, body);
   }
 
   @Delete(':id')

@@ -1,5 +1,4 @@
 // Mongo
-// import * as mongoose from 'mongoose';
 import { HydratedDocument } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
@@ -24,14 +23,8 @@ export class Book {
   })
   isbn: string;
 
-  @Prop({ type: String, required: true })
+  @Prop({ type: Date, required: true })
   published_date: Date;
-
-  // @Prop({
-  //   type: [mongoose.Schema.Types.ObjectId],
-  //   ref: 'Token',
-  // })
-  // tokens: Array<mongoose.Schema.Types.ObjectId>;
 }
 
 export const BookSchema = SchemaFactory.createForClass(Book);

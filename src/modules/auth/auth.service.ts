@@ -63,11 +63,11 @@ export class AuthService {
       user_id: userId,
     });
 
-    const tokenId = token['_id'];
-
     if (!token) {
       throw new UnauthorizedException('Invalid access or refresh token!');
     }
+
+    const tokenId = token['_id'];
 
     await this.tokenService.deleteToken(tokenId);
     await this.userRepository.removeAuthToken(userId, tokenId);

@@ -19,6 +19,7 @@ import { AppService } from './app.service';
 
 // Module
 import { AuthModule } from './modules/auth/auth.module';
+import { BookModule } from './modules/book/book.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { AuthModule } from './modules/auth/auth.module';
       useClass: MongoDbConfig,
     }),
     AuthModule,
+    BookModule,
   ],
   controllers: [AppController],
   providers: [AppService, JwtStrategy],
