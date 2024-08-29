@@ -11,11 +11,11 @@ import {
 // Swagger
 import {
   ApiTags,
-  ApiHeader,
   ApiOkResponse,
   ApiCreatedResponse,
   ApiBadRequestResponse,
   ApiUnauthorizedResponse,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 
 // Service
@@ -60,11 +60,7 @@ export class AuthController {
 
   @Post('refresh-token')
   @HttpCode(HttpStatus.OK)
-  @ApiHeader({
-    name: 'Authorization',
-    description:
-      'JWT access token which is related to refresh token (passed in request body).',
-  })
+  @ApiBearerAuth()
   @ApiOkResponse({
     description: 'Authorized successfully.',
     example: {
