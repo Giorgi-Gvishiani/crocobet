@@ -12,7 +12,7 @@ $ yarn install --frozen-lockfile
 ```
 
 ```bash
-$ cp env.example .env
+$ cp .env.example .env
 ```
 
 
@@ -37,7 +37,7 @@ $ yarn run start:prod
 
 At first need to create .env.test file update secrets for test env.
 ```bash
-$ cp env.example .env.test
+$ cp .env.example .env.test
 ```
 
 ```bash
