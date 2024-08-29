@@ -26,7 +26,7 @@ export class PageService {
     private readonly bookRepository: BookRepository,
   ) {}
 
-  async create(payload: PageDto): Promise<void> {
+  async create(payload: PageDto): Promise<PageDto> {
     const page = await this.pageRepository.create(payload);
     const book = await this.bookRepository.addPage(
       payload.book_id,
@@ -35,6 +35,8 @@ export class PageService {
 
     const cacheKey = `books:detail:${book['_id']}`;
     await this.cacheService.set(cacheKey, book);
+
+    return this.pageMapper(page);
   }
 
   async update(id: string, payload: UpdatePageDto): Promise<void> {

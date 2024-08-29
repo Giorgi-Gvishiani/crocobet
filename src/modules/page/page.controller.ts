@@ -16,13 +16,13 @@ import {
 // Swagger
 import {
   ApiTags,
-  ApiBearerAuth,
-  ApiBadRequestResponse,
-  ApiUnauthorizedResponse,
-  ApiCreatedResponse,
+  ApiQuery,
   ApiParam,
   ApiOkResponse,
-  ApiQuery,
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiBadRequestResponse,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
 // Guard
@@ -52,8 +52,8 @@ export class PageController {
   })
   @ApiBadRequestResponse({ description: 'The page already exist.' })
   @ApiBadRequestResponse({ description: 'Invalid DTO payload.' })
-  async create(@Body() body: PageDto): Promise<void> {
-    await this.pageService.create(body);
+  async create(@Body() body: PageDto): Promise<PageDto> {
+    return await this.pageService.create(body);
   }
 
   @Put(':id')
