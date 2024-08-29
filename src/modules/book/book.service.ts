@@ -62,7 +62,6 @@ export class BookService {
 
   async getBookList(cursor: string): Promise<BookListDto> {
     // არ ვიცი რამდენად იყო საჭირო რომ List-ის წამოღების დროს გამეკეთებინა პაგინაცია. მე კი გავაკეთე ეგ და მაგ list-ის დაქეშვაც გავაკეთე
-    // უბრალოდ ინახავს თითო პაგინაციის პეიჯს, ის რომ გავაკეთო pagination + caching ცოტა კომპლეკსური საკითხია და ამ ეტაპზე გავანებე თავი
 
     const cacheKey = `books:list:${cursor}`;
     const cachedBook = await this.cacheService.get<Array<Book>>(cacheKey);
@@ -87,6 +86,12 @@ export class BookService {
       cursor: books[books.length - 1].id,
       is_last_page: isLastPage,
     };
+  }
+
+  async searchBook(content: string): Promise<Array<BookDto>> {
+    const books = await this.bookRepository.search(content);
+
+    return books.map(this.bookMapper);
   }
 
   private bookMapper(book: Book): BookDto {

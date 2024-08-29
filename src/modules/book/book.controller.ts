@@ -34,6 +34,7 @@ import { BookService } from './book.service';
 // Dto
 import { BookDto } from './dto/book.dto';
 import { BookListDto } from './dto/book-list.dto';
+import { SearchBookDto } from './dto/search-book.dto';
 import { GetBookListDto } from './dto/get-book-list.dto';
 
 @ApiTags('Book')
@@ -81,6 +82,29 @@ export class BookController {
   })
   async delete(@Param('id') id: string): Promise<void> {
     await this.bookService.delete(id);
+  }
+
+  @Get('search')
+  @HttpCode(HttpStatus.OK)
+  @ApiQuery({
+    name: 'content',
+    required: false,
+    description: 'Search book by author or title',
+  })
+  @ApiOkResponse({
+    description: 'The search result successfully returned.',
+    example: [
+      {
+        id: '66cf1c595b1b118f35bd5ab7',
+        title: 'Harry Potter',
+        author: 'J. K. Rowling',
+        isbn: '9780733426094',
+        publication_date: '2024-09-01T00:00:00Z',
+      },
+    ],
+  })
+  async searchBook(@Query() query: SearchBookDto): Promise<Array<BookDto>> {
+    return await this.bookService.searchBook(query.content);
   }
 
   @Get(':id')

@@ -68,8 +68,15 @@ export class BookRepository implements IBookRepository {
       .exec();
   }
 
-  private async findOneByIsbn(isbn: string): Promise<Book> {
-    return await this.bookModel.findOne({ isbn }).exec();
+  async search(content: string): Promise<Array<Book>> {
+    const query = {
+      $or: [
+        { title: { $regex: content, $options: 'i' } },
+        { author: { $regex: content, $options: 'i' } },
+      ],
+    };
+
+    return await this.bookModel.find(query).exec();
   }
 
   async addPage(bookId: string, pageId: string): Promise<Book> {
@@ -82,5 +89,9 @@ export class BookRepository implements IBookRepository {
     return await this.bookModel.findByIdAndUpdate(bookId, {
       $pull: { pages: new Types.ObjectId(pageId) },
     });
+  }
+
+  private async findOneByIsbn(isbn: string): Promise<Book> {
+    return await this.bookModel.findOne({ isbn }).exec();
   }
 }
