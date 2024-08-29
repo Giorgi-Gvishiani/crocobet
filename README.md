@@ -35,6 +35,11 @@ $ yarn run start:prod
 
 ## Test
 
+At first need to create .env.test file update secrets for test env.
+```bash
+$ cp env.example .env.test
+```
+
 ```bash
 # unit tests
 $ yarn run test
@@ -42,5 +47,5 @@ $ yarn run test
 
 ```bash
 # integration tests
-$ yarn run test
+$ yarn run test:e2e
 ```
