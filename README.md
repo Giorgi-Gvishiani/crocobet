@@ -33,6 +33,8 @@ $ yarn run start:dev
 $ yarn run start:prod
 ```
 
+## [Swagger documentation](http://localhost:3000/api-docs)
+
 ## Test
 
 At first need to create .env.test file update secrets for test env.
@@ -40,7 +42,7 @@ At first need to create .env.test file update secrets for test env.
 $ cp .env.example .env.test
 ```
 
-```bash
+```l
 # unit tests
 $ yarn run test
 ```
