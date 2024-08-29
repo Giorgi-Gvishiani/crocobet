@@ -60,6 +60,8 @@ export class PageService {
   async getOne(id: string): Promise<PageDto> {
     const page = await this.pageRepository.findOne(id);
 
+    if (!page) throw new BadRequestException('Page does not exist!');
+
     return this.pageMapper(page);
   }
 

@@ -74,7 +74,7 @@ export class PageRepository implements IPageRepository {
     pageNumber: number,
   ): Promise<Page> {
     return await this.pageModel
-      .findOne({ book: bookId, page_number: pageNumber })
+      .findOne({ book: new Types.ObjectId(bookId), page_number: pageNumber })
       .exec();
   }
 }
