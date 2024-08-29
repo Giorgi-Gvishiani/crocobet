@@ -37,9 +37,11 @@ export class BookService {
   }
 
   async delete(id: string): Promise<void> {
+    const cacheKey = `books:detail:${id}`;
+
     await this.bookRepository.delete(id);
 
-    // Todo: add remove from redis
+    await this.cacheService.del(cacheKey);
   }
 
   async findOne(id: string): Promise<BookDto> {
