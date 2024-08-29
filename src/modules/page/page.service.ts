@@ -14,14 +14,14 @@ import { PageListDto } from './dto/page-list.dto';
 import { UpdatePageDto } from './dto/update-page.dto';
 
 // Service
-import { CacheService } from '../../cache/cache.service';
+import { BookRedisService } from '../../cache/services/book-redis.service';
 
 @Injectable()
 export class PageService {
   private pageLimit = 20;
 
   constructor(
-    private readonly cacheService: CacheService,
+    private readonly bookRedisService: BookRedisService,
     private readonly pageRepository: PageRepository,
     private readonly bookRepository: BookRepository,
   ) {}
@@ -33,8 +33,7 @@ export class PageService {
       page['_id'],
     );
 
-    const cacheKey = `books:detail:${book['_id']}`;
-    await this.cacheService.set(cacheKey, book);
+    await this.bookRedisService.setBookDetail(book['_id'], book);
 
     return this.pageMapper(page);
   }
@@ -50,11 +49,15 @@ export class PageService {
   async delete(id: string): Promise<void> {
     const page = await this.pageRepository.findOne(id);
 
-    await this.pageRepository.delete(id);
-    const book = await this.bookRepository.removePage(page.book.toString(), id);
+    if (page) {
+      await this.pageRepository.delete(id);
+      const book = await this.bookRepository.removePage(
+        page.book.toString(),
+        id,
+      );
 
-    const cacheKey = `books:detail:${book['_id']}`;
-    await this.cacheService.set(cacheKey, book);
+      await this.bookRedisService.setBookDetail(book['_id'], book);
+    }
   }
 
   async getOne(id: string): Promise<PageDto> {

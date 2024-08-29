@@ -15,7 +15,7 @@ import { PageController } from './page.controller';
 
 // Service
 import { PageService } from './page.service';
-import { CacheService } from '../../cache/cache.service';
+import { BookRedisService } from '../../cache/services/book-redis.service';
 
 @Module({
   imports: [
@@ -23,6 +23,6 @@ import { CacheService } from '../../cache/cache.service';
     MongooseModule.forFeature([{ name: Book.name, schema: BookSchema }]),
   ],
   controllers: [PageController],
-  providers: [PageService, CacheService, PageRepository, BookRepository],
+  providers: [PageService, BookRedisService, PageRepository, BookRepository],
 })
 export class PageModule {}

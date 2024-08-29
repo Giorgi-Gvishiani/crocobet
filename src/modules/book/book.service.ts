@@ -12,14 +12,14 @@ import { BookDto } from './dto/book.dto';
 import { BookListDto } from './dto/book-list.dto';
 
 // Service
-import { CacheService } from '../../cache/cache.service';
+import { BookRedisService } from '../../cache/services/book-redis.service';
 
 @Injectable()
 export class BookService {
   private readonly pageLimit = 20;
 
   constructor(
-    private cacheService: CacheService,
+    private readonly bookRedisService: BookRedisService,
     private readonly bookRepository: BookRepository,
   ) {}
 
@@ -30,27 +30,21 @@ export class BookService {
   }
 
   async update(id: string, payload: BookDto): Promise<void> {
-    const cacheKey = `books:detail:${id}`;
-
     const result = await this.bookRepository.update(id, payload);
 
     if (!result) throw new BadRequestException('Book does not exist!');
 
-    await this.cacheService.set(cacheKey, result);
+    await this.bookRedisService.setBookDetail(id, result);
   }
 
   async delete(id: string): Promise<void> {
-    const cacheKey = `books:detail:${id}`;
-
     await this.bookRepository.delete(id);
 
-    await this.cacheService.del(cacheKey);
+    await this.bookRedisService.deleteBookDetail(id);
   }
 
   async findOne(id: string): Promise<BookDto> {
-    const cacheKey = `books:detail:${id}`;
-
-    const cachedBook = await this.cacheService.get<Book>(cacheKey);
+    const cachedBook = await this.bookRedisService.getBookDetail(id);
 
     const response = await this.bookRepository.findOne(id);
 
@@ -58,16 +52,14 @@ export class BookService {
       throw new BadRequestException('Book not found!');
     }
 
-    await this.cacheService.set(cacheKey, response);
+    await this.bookRedisService.setBookDetail(id, response);
 
     return this.bookMapper(cachedBook ?? response);
   }
 
   async getBookList(cursor: string): Promise<BookListDto> {
     // არ ვიცი რამდენად იყო საჭირო რომ List-ის წამოღების დროს გამეკეთებინა პაგინაცია. მე კი გავაკეთე ეგ და მაგ list-ის დაქეშვაც გავაკეთე
-
-    const cacheKey = `books:list:${cursor}`;
-    const cachedBook = await this.cacheService.get<Array<Book>>(cacheKey);
+    const cachedBook = await this.bookRedisService.getBookList(cursor);
 
     let isLastPage = false;
     const response =
@@ -80,7 +72,7 @@ export class BookService {
       response.pop();
     }
 
-    await this.cacheService.set(cacheKey, response);
+    await this.bookRedisService.setBookList(cursor, response);
 
     const books = response.map(this.bookMapper);
 
