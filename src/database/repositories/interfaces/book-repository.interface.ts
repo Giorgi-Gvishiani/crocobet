@@ -5,7 +5,7 @@ import { Book } from '../../models/book.model';
 import { BookDto } from '../../../modules/book/dto/book.dto';
 
 export interface IBookRepository {
-  create(payload: BookDto): Promise<void>;
+  create(payload: BookDto): Promise<Book>;
 
   update(id: string, payload: BookDto): Promise<Book | null>;
 

@@ -17,7 +17,7 @@ import { BookDto } from '../../modules/book/dto/book.dto';
 export class BookRepository implements IBookRepository {
   constructor(@InjectModel(Book.name) private bookModel: Model<Book>) {}
 
-  async create(payload: BookDto): Promise<void> {
+  async create(payload: BookDto): Promise<Book> {
     const isbn = payload.isbn;
 
     const book = await this.findOneByIsbn(isbn);
@@ -36,7 +36,7 @@ export class BookRepository implements IBookRepository {
 
     const record = new this.bookModel(newBook);
 
-    await record.save();
+    return await record.save();
   }
 
   async update(id: string, payload: BookDto): Promise<Book | null> {

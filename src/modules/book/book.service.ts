@@ -23,17 +23,20 @@ export class BookService {
     private readonly bookRepository: BookRepository,
   ) {}
 
-  async create(payload: BookDto): Promise<void> {
-    await this.bookRepository.create(payload);
+  async create(payload: BookDto): Promise<BookDto> {
+    const book = await this.bookRepository.create(payload);
+
+    return this.bookMapper(book);
   }
 
   async update(id: string, payload: BookDto): Promise<void> {
     const cacheKey = `books:detail:${id}`;
 
     const result = await this.bookRepository.update(id, payload);
-    await this.cacheService.set(cacheKey, result);
 
     if (!result) throw new BadRequestException('Book does not exist!');
+
+    await this.cacheService.set(cacheKey, result);
   }
 
   async delete(id: string): Promise<void> {

@@ -49,11 +49,18 @@ export class BookController {
   @HttpCode(HttpStatus.CREATED)
   @ApiCreatedResponse({
     description: 'The book has been successfully created.',
+    example: {
+      id: '66cf1c595b1b118f35bd5ab7',
+      title: 'Harry Potter',
+      author: 'J. K. Rowling',
+      isbn: '9780733426094',
+      publication_date: '2024-09-01T00:00:00Z',
+    },
   })
   @ApiBadRequestResponse({ description: 'The ISBN already exist.' })
   @ApiBadRequestResponse({ description: 'Invalid DTO payload.' })
-  async create(@Body() body: BookDto): Promise<void> {
-    await this.bookService.create(body);
+  async create(@Body() body: BookDto): Promise<BookDto> {
+    return await this.bookService.create(body);
   }
 
   @Put(':id')
