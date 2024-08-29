@@ -32,17 +32,17 @@ describe('AppController (e2e)', () => {
   };
 
   const signInDto: SignInDto = {
-    email: 'test.user@gmail.com',
-    password: 'password',
+    email: signUpDto.email,
+    password: signUpDto.password,
   };
 
   const notExistSignInDto: SignInDto = {
     email: 'no_exist.user@gmail.com',
-    password: 'invalid_password',
+    password: signUpDto.password,
   };
 
   const invalidSignInDto: SignInDto = {
-    email: 'test.user@gmail.com',
+    email: signUpDto.email,
     password: 'invalid_password',
   };
 
