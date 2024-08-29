@@ -38,6 +38,8 @@ export class BookService {
 
   async delete(id: string): Promise<void> {
     await this.bookRepository.delete(id);
+
+    // Todo: add remove from redis
   }
 
   async findOne(id: string): Promise<BookDto> {

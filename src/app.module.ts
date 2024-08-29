@@ -15,12 +15,6 @@ import { RedisConfig } from './cache/redis.config';
 // Strategy
 import { JwtStrategy } from './strategies/jwt.strategy';
 
-// Controller
-import { AppController } from './app.controller';
-
-// Service
-import { AppService } from './app.service';
-
 // Module
 import { AuthModule } from './modules/auth/auth.module';
 import { BookModule } from './modules/book/book.module';
@@ -45,7 +39,6 @@ import { PageModule } from './modules/page/page.module';
     BookModule,
     PageModule,
   ],
-  controllers: [AppController],
-  providers: [AppService, JwtStrategy],
+  providers: [JwtStrategy],
 })
 export class AppModule {}
