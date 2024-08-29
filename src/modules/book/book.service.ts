@@ -78,7 +78,7 @@ export class BookService {
 
     return {
       books,
-      cursor: books[books.length - 1].id,
+      cursor: isLastPage ? null : books[books.length - 1].id,
       is_last_page: isLastPage,
     };
   }
