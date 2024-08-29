@@ -29,11 +29,12 @@ export class AuthService {
 
   async signIn(payload: SignInDto): Promise<AuthTokensDto> {
     const user = await this.userRepository.validateUser(payload);
-    const userId = user['_id'];
 
     if (!user) {
       throw new UnauthorizedException('email or password is invalid!');
     }
+
+    const userId = user['_id'];
 
     const token = await this.tokenService.generateAuthTokens(
       userId,

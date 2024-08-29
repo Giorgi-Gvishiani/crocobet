@@ -1,5 +1,5 @@
 // Nest
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 
 // Jwt
 import { JwtService } from '@nestjs/jwt';
@@ -54,19 +54,20 @@ export class TokenService {
   }
 
   decodeAccessToken(accessToken: string): DecodedAccessTokenDto {
-    try {
-      const preparedAccessToken = accessToken.replace('Bearer ', '');
+    const preparedAccessToken = accessToken.replace('Bearer ', '');
 
-      return this.jwtService.decode(preparedAccessToken);
-    } catch (error) {
-      throw new BadRequestException('Invalid access token!');
-    }
+    const result = this.jwtService.decode(preparedAccessToken);
+
+    if (!result) throw new UnauthorizedException('Invalid access token!');
+
+    return result;
   }
 
   private generateAccessToken(payload: GenerateTokenDto) {
     return this.jwtService.sign(payload, {
       secret: process.env.JWT_ACCESS_TOKEN_SECRET,
       expiresIn: this.accessTokenLifetime,
+      audience: `${Date.now()}`,
     });
   }
 
@@ -74,6 +75,7 @@ export class TokenService {
     return this.jwtService.sign(payload, {
       secret: process.env.JWT_REFRESH_TOKEN_SECRET,
       expiresIn: this.refreshTokenLifetime,
+      audience: `${Date.now()}`,
     });
   }
 }
